@@ -21,6 +21,25 @@ public class Solver implements ActionListener {
 		start = gui.getStartButton();
 		grid = new Field[9][9];
 		initFields();
+		
+		if(Helper.debug) {
+			debugValues();
+			gui.updateFields(grid);
+		}
+	}
+	
+	public void debugValues() {
+		
+		int k = 1;
+		
+		for(int i = 0; i<9; i++) {
+			for(int j = 0; j<9; j++) {
+				if(grid[i][j].getQuadrant() == 0) {
+					grid[i][j].setNumber(k);
+					k += 1;
+				}
+			}
+		}
 	}
 
 	private void initFields() {
@@ -28,13 +47,20 @@ public class Solver implements ActionListener {
 		for(int i = 0; i<9; i++) {
 			for(int j = 0; j<9; j++) {
 				grid[i][j] = new Field(Helper.getQuadrant(i, j));
-				
+			}
+		}
+	}
+	
+	private void updateFields() {
+		
+		for(int i = 0; i<9; i++) {
+			for(int j = 0; j<9; j++) {
 				if(gui.getFieldValue(i, j) > 0){
 					grid[i][j].setNumber(gui.getFieldValue(i, j));
 					grid[i][j].setFix(true);
 				}
 			}
-		}
+		}	
 	}
 	
 	private void updatePossibles() {
@@ -92,15 +118,30 @@ public class Solver implements ActionListener {
 		return true;
 	}
 	
+	public void resetFields() {
+		for(int i = 0; i<9; i++) {
+			for(int j = 0; j<9; j++) {
+			grid[i][j].reset();
+			}
+		}
+		
+		gui.updateFields(grid);
+	}
+	
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		if (e.getSource() ==  gui.getStartButton()) {
 			System.out.println("Start");
 		} else if (e.getSource() == gui.getPosButton()) {
+			updateFields();
 			updatePossibles();
+			for(int i = 0; i<9; i++) {
 			gui.updateFields(grid);
+			}
+		} else if (e.getSource() == gui.getResetButton()) {
+			resetFields();
 		}
 	}
-
 }

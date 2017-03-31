@@ -1,6 +1,8 @@
 package de.halemba.helpers;
 
 public final class Helper {
+	
+	public static final boolean debug = false;
 
 	public static int getQuadrant(int i, int j) {
 		//Decide to which quadrant the field belongs to

@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.GridLayout;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -18,10 +19,15 @@ public class SudokuGUI {
 	
 	JPanel mainpanel;
 	JPanel[] subPanels;
+	JPanel btnPanel;
 	JTextField[][] fields;
 	JFrame frame;
+	
+	//Buttons
 	JButton startbtn;
 	JButton posStepBtn;
+	JButton resetbtn;
+	
 	Solver solver;
 	
 	public SudokuGUI(Solver solver) {
@@ -43,6 +49,11 @@ public class SudokuGUI {
 		mainpanel.setLayout(new GridLayout(3,3));
 		frame.add(mainpanel, java.awt.BorderLayout.CENTER);
 		
+		//Create Button Panel
+		btnPanel = new JPanel();
+		btnPanel.setLayout(new BoxLayout(btnPanel, BoxLayout.X_AXIS));
+		frame.add(btnPanel, java.awt.BorderLayout.SOUTH);
+		
 		//Create Subpanels
 		subPanels = new JPanel[9];
 		fields = new JTextField[9][9];
@@ -52,7 +63,6 @@ public class SudokuGUI {
 			subPanels[i].setLayout(new GridLayout(3,3));
 			subPanels[i].setBorder(blackline);
 			mainpanel.add(subPanels[i]);
-			System.out.println("Created Panel: "+i);
 		}
 		
 		for (int i = 0; i<9; i++) {
@@ -62,16 +72,24 @@ public class SudokuGUI {
 			}
 		}
 		
-		//Create Buttons
-		startbtn = new JButton("Start");
-		frame.add(startbtn, java.awt.BorderLayout.PAGE_END);
-		startbtn.addActionListener(this.solver);
 		
-		posStepBtn = new JButton("Possible Check");
-		frame.add(posStepBtn, java.awt.BorderLayout.EAST);
-		posStepBtn.addActionListener(this.solver);
-		
+		createButtons();
 		frame.setVisible(true);
+	}
+	
+	public void createButtons() {
+		//Create Buttons
+				startbtn = new JButton("Start");
+				btnPanel.add(startbtn);
+				startbtn.addActionListener(this.solver);
+				
+				posStepBtn = new JButton("Possible Check");
+				btnPanel.add(posStepBtn);
+				posStepBtn.addActionListener(this.solver);
+				
+				resetbtn = new JButton("Reset");
+				btnPanel.add(resetbtn);
+				resetbtn.addActionListener(this.solver);
 	}
 	
 	public JButton getStartButton() {
@@ -80,6 +98,10 @@ public class SudokuGUI {
 	
 	public JButton getPosButton() {
 		return posStepBtn;
+	}
+	
+	public JButton getResetButton() {
+		return resetbtn;
 	}
 	
 	public int getFieldValue(int i, int j) {

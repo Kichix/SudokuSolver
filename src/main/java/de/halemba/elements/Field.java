@@ -26,6 +26,15 @@ public class Field {
 		
 	}
 	
+	public void reset() {
+		for(int i=1; i < 10; i++) {
+			possibleNumbers[i-1] = i;
+		}
+		
+		updateCount();
+		this.currentNumber = 0;
+	}
+	
 	public void setNumber(int i) {
 		this.currentNumber = i;
 	}
@@ -44,13 +53,17 @@ public class Field {
 	
 	public void delPossibleNumber(int i) {
 		
-		for(int j = 0; j <= possibleNumbers.length; j++) {
+		for(int j = 0; j < possibleNumbers.length; j++) {
 			if(possibleNumbers[j] == i) {
 				possibleNumbers[j] = 0;
 			}
 		}
 		
 		updateCount();
+	}
+	
+	public int[] getPossbileNumbers() {
+		return this.possibleNumbers;
 	}
 	
 	public void addPossibleNumber(int i) {
@@ -71,16 +84,15 @@ public class Field {
 		for(int i = 0; i<possibleNumbers.length; i++) {
 			if (possibleNumbers[i] != 0) {
 				x+=1;
-			} else {
 				y = possibleNumbers[i];
-			}
+			} 
 		}
 		
 		if(x>1) {
 		this.possibleCount = x;
 		} else if(x==1) {
-			currentNumber = y;
-			possibleCount = 1;
+			this.currentNumber = y;
+			this.possibleCount = x;
 		}
 	}
 
