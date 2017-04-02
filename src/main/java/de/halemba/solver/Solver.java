@@ -67,12 +67,11 @@ public class Solver implements ActionListener {
 		
 		for(int i = 0; i<9; i++) {
 			for(int j = 0; j<9; j++) {
-				if(grid[i][j].getFix()) {
-				} else {
+				if(!grid[i][j].getFix()) {
 					for(int k=1; k<=9; k++) {
-						if(checkRow(i,j,k)) {
-							if(checkCol(i,j,k)) {
-								if(checkQuad(i,j,k)) {
+						if(Helper.checkRow(i,j,k,grid)) {
+							if(Helper.checkCol(i,j,k,grid)) {
+								if(Helper.checkQuad(i,j,k,grid)) {
 									
 								} else {
 									grid[i][j].delPossibleNumber(k);
@@ -89,33 +88,22 @@ public class Solver implements ActionListener {
 		}
 	}
 	
-	private boolean checkRow(int i, int j, int k) {
-		for(int l=0; l<9; l++) {
-			if(grid[i][l].getNumber() == k && l!=j)
-				return false;
-		}
-		return true;
-	}
-	
-	private boolean checkCol(int i, int j, int k) {
-		for(int l=0; l<9; l++) {
-			if(grid[l][j].getNumber() == k && l!=i)
-				return false;
-		}
-		return true;
-	}
-	
-	private boolean checkQuad(int i, int j, int k) {
-		for(int l=0; l<9; l++) {
-			for(int m=0; m<9; m++) {
-				if(l!=i && m!=j) {
-					if(grid[l][m].getQuadrant() == grid[i][j].getQuadrant() && grid[l][m].getNumber() == k) {
-						return false;
+	public void checkNeededInRow() {
+		
+		int n;
+		
+		//Rows
+		for(int j=0; j<9; j++) {
+			//Numbers
+			for(int i=1; i<10; i++) {
+				if(Helper.checkMissingInRow(i, j, grid)) {
+					n = Helper.checkSinglePossiblityRow(i, j, grid);
+					if(n>=0) {
+						grid[n][j].setNumber(i);
 					}
 				}
 			}
 		}
-		return true;
 	}
 	
 	public void resetFields() {
@@ -128,12 +116,12 @@ public class Solver implements ActionListener {
 		gui.updateFields(grid);
 	}
 	
-	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		if (e.getSource() ==  gui.getStartButton()) {
-			System.out.println("Start");
+			checkNeededInRow();
+			gui.updateFields(grid);
 		} else if (e.getSource() == gui.getPosButton()) {
 			updateFields();
 			updatePossibles();

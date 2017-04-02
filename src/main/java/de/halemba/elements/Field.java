@@ -93,6 +93,7 @@ public class Field {
 		} else if(x==1) {
 			this.currentNumber = y;
 			this.possibleCount = x;
+			this.fixed=true;
 		}
 	}
 
