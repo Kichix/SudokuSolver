@@ -7,12 +7,13 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 
 import de.halemba.elements.Field;
-import de.halemba.helpers.Helper;
+import de.halemba.helpers.SolveHelper;
 import de.halemba.solver.Solver;
 
 public class SudokuGUI {
@@ -20,8 +21,12 @@ public class SudokuGUI {
 	JPanel mainpanel;
 	JPanel[] subPanels;
 	JPanel btnPanel;
+	JPanel statusPanel;
+	
 	JTextField[][] fields;
 	JFrame frame;
+	
+	JLabel status;
 	
 	//Buttons
 	JButton startbtn;
@@ -54,6 +59,16 @@ public class SudokuGUI {
 		btnPanel.setLayout(new BoxLayout(btnPanel, BoxLayout.X_AXIS));
 		frame.add(btnPanel, java.awt.BorderLayout.SOUTH);
 		
+		//Create Status Panel
+		statusPanel = new JPanel();
+		statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.X_AXIS));
+		status = new JLabel("");
+		status.setForeground(Color.RED);
+		status.setSize(200, 50);
+		statusPanel.add(status);
+		
+		frame.add(statusPanel, java.awt.BorderLayout.NORTH);
+		
 		//Create Subpanels
 		subPanels = new JPanel[9];
 		fields = new JTextField[9][9];
@@ -68,13 +83,17 @@ public class SudokuGUI {
 		for (int i = 0; i<9; i++) {
 			for (int j = 0; j<9; j++) {
 				fields[i][j] = new JTextField("0", 5);
-				subPanels[Helper.getQuadrant(i, j)].add(fields[i][j]);
+				subPanels[SolveHelper.getQuadrant(i, j)].add(fields[i][j]);
 			}
 		}
 		
 		
 		createButtons();
 		frame.setVisible(true);
+	}
+	
+	public void setState(String s) {
+		status.setText(s);
 	}
 	
 	public void createButtons() {
@@ -115,5 +134,6 @@ public class SudokuGUI {
 			}
 		}	
 	}
+	
 
 }

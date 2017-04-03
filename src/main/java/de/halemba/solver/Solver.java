@@ -7,7 +7,8 @@ import javax.swing.JButton;
 
 import de.halemba.elements.Field;
 import de.halemba.gui.SudokuGUI;
-import de.halemba.helpers.Helper;
+import de.halemba.helpers.SolveHelper;
+import de.halemba.helpers.Validator;
 
 public class Solver implements ActionListener {
 	
@@ -22,12 +23,13 @@ public class Solver implements ActionListener {
 		grid = new Field[9][9];
 		initFields();
 		
-		if(Helper.debug) {
+		if(SolveHelper.debug) {
 			debugValues();
 			gui.updateFields(grid);
 		}
 	}
 	
+	//Sets some values for debugging purposes
 	public void debugValues() {
 		
 		int k = 1;
@@ -42,15 +44,17 @@ public class Solver implements ActionListener {
 		}
 	}
 
+	//Initializes the grid
 	private void initFields() {
 		
 		for(int i = 0; i<9; i++) {
 			for(int j = 0; j<9; j++) {
-				grid[i][j] = new Field(Helper.getQuadrant(i, j));
+				grid[i][j] = new Field(SolveHelper.getQuadrant(i, j));
 			}
 		}
 	}
 	
+	//Updates the grid from the GUI
 	private void updateFields() {
 		
 		for(int i = 0; i<9; i++) {
@@ -63,15 +67,16 @@ public class Solver implements ActionListener {
 		}	
 	}
 	
+	//Updates the possible numbers for each field
 	private void updatePossibles() {
 		
 		for(int i = 0; i<9; i++) {
 			for(int j = 0; j<9; j++) {
 				if(!grid[i][j].getFix()) {
 					for(int k=1; k<=9; k++) {
-						if(Helper.checkRow(i,j,k,grid)) {
-							if(Helper.checkCol(i,j,k,grid)) {
-								if(Helper.checkQuad(i,j,k,grid)) {
+						if(SolveHelper.checkRow(i,j,k,grid)) {
+							if(SolveHelper.checkCol(i,j,k,grid)) {
+								if(SolveHelper.checkQuad(i,j,k,grid)) {
 									
 								} else {
 									grid[i][j].delPossibleNumber(k);
@@ -88,6 +93,7 @@ public class Solver implements ActionListener {
 		}
 	}
 	
+	//Sets a number if it is needed in a row and there is only one possible field
 	public void checkNeededInRow() {
 		
 		int n;
@@ -96,8 +102,8 @@ public class Solver implements ActionListener {
 		for(int j=0; j<9; j++) {
 			//Numbers
 			for(int i=1; i<10; i++) {
-				if(Helper.checkMissingInRow(i, j, grid)) {
-					n = Helper.checkSinglePossiblityRow(i, j, grid);
+				if(SolveHelper.checkMissingInRow(i, j, grid)) {
+					n = SolveHelper.checkSinglePossiblityRow(i, j, grid);
 					if(n>=0) {
 						grid[j][n].setNumber(i);
 					}
@@ -106,6 +112,52 @@ public class Solver implements ActionListener {
 		}
 	}
 	
+	//Sets a number if it is needed in a column and there is only one possible field
+	public void checkNeededInColumn() {
+
+		int n;
+		
+		//Columns
+		for(int j=0; j<9; j++) {
+			//Numbers
+			for(int i=1; i<10; i++) {
+				if(SolveHelper.checkMissingInColumn(i, j, grid)) {
+					n = SolveHelper.checkSinglePossiblityColumn(i, j, grid);
+					if(n>=0) {
+						grid[n][j].setNumber(i);
+					}
+				}
+			}
+		}
+	}
+	
+	//Sets a number if it is needed in a quadrant and there is only one possible field
+	public void checkNeededInQuadrant() {
+		
+		int[] n;
+		
+		//Quadrants
+		for(int j=0; j<9; j++) {
+			//Numbers
+			for(int i=1; i<10; i++) {
+				if(SolveHelper.checkMissingInQuadrant(i, j, grid)) {
+					n = SolveHelper.checkSinglePossiblityQuadrant(i, j, grid);
+					if(n[0]>=0) {
+						grid[n[0]][n[1]].setNumber(i);
+					}
+				}
+			}
+		}
+	}
+	
+	//Executes all the "needed"-methods from above in a single call
+	public void checkNeeded() {
+		checkNeededInRow();
+		checkNeededInColumn();
+		checkNeededInQuadrant();
+	}
+	
+	//Resets the Sudoku
 	public void resetFields() {
 		for(int i = 0; i<9; i++) {
 			for(int j = 0; j<9; j++) {
@@ -116,12 +168,36 @@ public class Solver implements ActionListener {
 		gui.updateFields(grid);
 	}
 	
+	//Solves the Sudoku
+	public void solve() {
+		
+		String error = "";
+		
+		updateFields();
+		
+		if(Validator.validate(grid)==0) {
+			while(!SolveHelper.solved(grid)) {
+				updatePossibles();
+				checkNeeded();
+			}
+			
+			gui.updateFields(grid);
+		} else {
+			switch(Validator.validate(grid)) {
+			case 1: error = "Zeile";
+			case 2: error = "Spalte";
+			case 3: error = "Kästchen";
+			}
+			gui.setState(String.format("Eingaben sind nicht valide, ein(e) %s enthält eine doppelte Zahl", error));
+		}
+	}
+	
+	//Actionlistener
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		if (e.getSource() ==  gui.getStartButton()) {
-			checkNeededInRow();
-			gui.updateFields(grid);
+			solve();
 		} else if (e.getSource() == gui.getPosButton()) {
 			updateFields();
 			updatePossibles();

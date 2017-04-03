@@ -2,7 +2,7 @@ package de.halemba.helpers;
 
 import de.halemba.elements.Field;
 
-public final class Helper {
+public final class SolveHelper {
 	
 	public static final boolean debug = false;
 
@@ -85,9 +85,6 @@ public final class Helper {
 			field = -1;
 		}
 		
-		if(i==7 && j==0) {
-			System.out.println(field);
-		}
 		return field;
 	}
 	
@@ -101,4 +98,101 @@ public final class Helper {
 		}
 		return true;
 	}
+	
+	//Checks if a given numbers is missing in a giving column
+	public static boolean checkMissingInColumn(int i, int j, Field[][] grid) {
+		
+		for(int k=0; k<9; k++) {
+			if(grid[k][j].getNumber() == i) {
+					return false;
+				} 
+		}
+		return true;
+	}
+	
+	//Checks if there is only one possible Field for a number(i) in a column(j)
+	public static int checkSinglePossiblityColumn(int i, int j, Field[][] grid) {
+			
+			int count = 0;
+			int field = -1;
+			int[] possibles;
+			
+			//Column
+			for(int k=0; k<9; k++) {
+				if(!grid[j][k].getFix()) {
+					possibles = grid[k][j].getPossbileNumbers();
+					
+					if(possibles[i-1] == i) {
+						count += 1;
+						field = k;
+					}
+				}
+			}
+			
+			if(count > 1) {
+				field = -1;
+			}
+			
+			return field;
+		}
+	
+	//Checks if a given numbers is missing in a given quadrant
+	public static boolean checkMissingInQuadrant(int i, int j, Field[][] grid) {
+		
+		for(int k=0; k<9; k++) {
+			for(int l=0; l<9; l++) {
+				if(grid[k][l].getQuadrant()==j && grid[k][l].getNumber()==i) {
+					return false;
+				} 
+			}
+		}
+		return true;
+	}
+	
+	//Checks if there is only one possiblity for a given number in a given field
+	public static int[] checkSinglePossiblityQuadrant(int i, int j, Field[][] grid) {
+		
+		int count = 0;
+		int[] field = new int[2];
+		int[] possibles;
+		
+		field[0] = -1;
+		field[1] = -1;
+		
+		//Column
+		for(int k=0; k<9; k++) {
+			for(int l =0; l<9; l++) {
+				if(!grid[k][l].getFix() && grid[k][l].getQuadrant()==j) {
+					possibles = grid[k][l].getPossbileNumbers();
+					
+					if(possibles[i-1] == i) {
+						count += 1;
+						field[0] = k;
+						field[1] = l;
+					}
+				}
+			}
+		}
+		
+		if(count > 1) {
+			field[0] = -1;
+			field[1] = -1;
+		}
+		
+		return field;
+	}
+	
+	//Returns if the Sudoku is solved
+	public static boolean solved(Field[][] grid) {
+		for(int i=0; i<9; i++) {
+			for(int j=0; j<9; j++) {
+				if(grid[i][j].getNumber()==0) {
+					return false;
+				}
+			}
+		}
+		
+		return true;
+	}
+	
 }
