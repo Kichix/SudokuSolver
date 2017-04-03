@@ -51,7 +51,7 @@ public final class Helper {
 	//Checks if a number is still free in the quadrant
 	public static boolean checkQuad(int i, int j, int k, Field[][] grid) {
 		for(int l=0; l<9; l++) {
-			for(int m=0; m<9; m++) {
+			for(int m=0; m<9; m++) { 
 				if(l!=i && m!=j) {
 					if(grid[l][m].getQuadrant() == grid[i][j].getQuadrant() && grid[l][m].getNumber() == k) {
 						return false;
@@ -95,7 +95,7 @@ public final class Helper {
 	public static boolean checkMissingInRow(int i, int j, Field[][] grid) {
 			
 		for(int k=0; k<9; k++) {
-			if(grid[k][j].getNumber() == i) {
+			if(grid[j][k].getNumber() == i) {
 					return false;
 				} 
 		}

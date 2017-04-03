@@ -99,7 +99,7 @@ public class Solver implements ActionListener {
 				if(Helper.checkMissingInRow(i, j, grid)) {
 					n = Helper.checkSinglePossiblityRow(i, j, grid);
 					if(n>=0) {
-						grid[n][j].setNumber(i);
+						grid[j][n].setNumber(i);
 					}
 				}
 			}
