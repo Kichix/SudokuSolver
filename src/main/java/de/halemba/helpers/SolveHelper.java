@@ -69,7 +69,7 @@ public final class SolveHelper {
 		int field = -1;
 		int[] possibles;
 		
-		//Column
+		//Row
 		for(int k=0; k<9; k++) {
 			if(!grid[j][k].getFix()) {
 				possibles = grid[j][k].getPossbileNumbers();
@@ -119,7 +119,7 @@ public final class SolveHelper {
 			
 			//Column
 			for(int k=0; k<9; k++) {
-				if(!grid[j][k].getFix()) {
+				if(!grid[k][j].getFix()) {
 					possibles = grid[k][j].getPossbileNumbers();
 					
 					if(possibles[i-1] == i) {
