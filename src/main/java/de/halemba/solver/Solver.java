@@ -108,6 +108,7 @@ public class Solver implements ActionListener {
 					n = SolveHelper.checkSinglePossiblityRow(i, j, grid);
 					if(n>=0) {
 						grid[j][n].setNumber(i);
+						grid[n][j].setFix(true);
 						break;
 					}
 				}
@@ -128,6 +129,7 @@ public class Solver implements ActionListener {
 					n = SolveHelper.checkSinglePossiblityColumn(i, j, grid);
 					if(n>=0) {
 						grid[n][j].setNumber(i);
+						grid[n][j].setFix(true);
 						break;
 					}
 				}
@@ -148,6 +150,7 @@ public class Solver implements ActionListener {
 					n = SolveHelper.checkSinglePossiblityQuadrant(i, j, grid);
 					if(n[0]>=0) {
 						grid[n[0]][n[1]].setNumber(i);
+						grid[n[0]][n[1]].setFix(true);
 						break;
 					}
 				}

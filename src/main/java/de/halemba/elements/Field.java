@@ -96,5 +96,18 @@ public class Field {
 			this.fixed=true;
 		}
 	}
+	
+	public int getNextNumber() {
+		
+		int number = -1;
+		
+		for(int i=0; i<possibleNumbers.length; i++) {
+			if(possibleNumbers[i]!=this.currentNumber && possibleNumbers[i]!=0) {
+				return possibleNumbers[i];
+			}
+		}
+		
+		return -1;
+	}
 
 }
