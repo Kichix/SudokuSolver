@@ -15,12 +15,14 @@ public class Solver implements ActionListener {
 	SudokuGUI gui;
 	JButton start;
 	Field[][] grid;
+	Field[][] oldGrid;
 	
 	public Solver() {
 		
 		gui = new SudokuGUI(this);
 		start = gui.getStartButton();
 		grid = new Field[9][9];
+		oldGrid = new Field[9][9];
 		initFields();
 		
 		if(SolveHelper.debug) {
@@ -155,6 +157,7 @@ public class Solver implements ActionListener {
 	
 	//Executes all the "needed"-methods from above in a single call
 	public void checkNeeded() {
+		
 		checkNeededInRow();
 		checkNeededInColumn();
 		checkNeededInQuadrant();
@@ -171,17 +174,50 @@ public class Solver implements ActionListener {
 		gui.updateFields(grid);
 	}
 	
+	//Checks if something happened in the last iteration
+	public boolean checkChange() {
+		
+		for(int i=0; i<9; i++) {
+			for(int j=0; j<9; j++) {
+				if(grid[i][j] != oldGrid[i][j]) {
+					return true;
+				}
+			}
+		}
+		return false;
+		
+	}
+	
+	public void refreshOldgrid() {
+		
+		for(int i=0; i<9; i++) {
+			for(int j=0; j<9; j++) {
+				oldGrid[i][j] = grid[i][j];
+			}
+		}
+		
+	}
+	
 	//Solves the Sudoku
 	public void solve() {
 		
 		String error = "";
+		boolean progress = true;
+		int countPos, countNeed;
 		
 		updateFields();
 		
 		if(Validator.validate(grid)==0) {
-			while(!SolveHelper.solved(grid)) {
+			while(!SolveHelper.solved(grid) && progress) {
+				
+				refreshOldgrid();
 				updatePossibles();
 				checkNeeded();
+				
+				if(!checkChange()){
+					progress=false;
+					gui.setState("Es konnte keine Lösung gefunden werden");
+				}
 			}
 			
 			gui.updateFields(grid);
