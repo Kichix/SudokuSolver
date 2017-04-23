@@ -103,9 +103,9 @@ public class SudokuGUI {
 				btnPanel.add(startbtn);
 				startbtn.addActionListener(this.solver);
 				
-				posStepBtn = new JButton("Possible Check");
-				btnPanel.add(posStepBtn);
-				posStepBtn.addActionListener(this.solver);
+//				posStepBtn = new JButton("Possible Check");
+//				btnPanel.add(posStepBtn);
+//				posStepBtn.addActionListener(this.solver);
 				
 				resetbtn = new JButton("Reset");
 				btnPanel.add(resetbtn);
