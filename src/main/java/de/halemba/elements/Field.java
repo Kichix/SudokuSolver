@@ -7,6 +7,7 @@ public class Field {
 	private boolean fixed;
 	private int quadrant;
 	private int possibleCount;
+	private int iteration;
 	
 	public Field(int q) {
 		
@@ -15,6 +16,7 @@ public class Field {
 		fixed = false;
 		quadrant = q;
 		possibleCount = 9;
+		iteration = 0;
 		
 		//Initialize possible numbers array
 		possibleNumbers = new int[9];
@@ -35,8 +37,13 @@ public class Field {
 		this.currentNumber = 0;
 	}
 	
+	public int getIterations() {
+		return this.iteration;
+	}
+	
 	public void setNumber(int i) {
 		this.currentNumber = i;
+		this.iteration += 1;
 	}
 	
 	public int getNumber() {

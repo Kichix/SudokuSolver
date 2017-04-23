@@ -13,6 +13,7 @@ public class SudokuSolver {
 		// TODO Auto-generated method stub
 		Solver solver;
 		solver = new Solver();
+		
 	}
 
 }

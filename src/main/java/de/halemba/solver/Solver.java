@@ -15,12 +15,14 @@ public class Solver implements ActionListener {
 	SudokuGUI gui;
 	JButton start;
 	Field[][] grid;
+	Field[][] oldGrid;
 	
 	public Solver() {
 		
 		gui = new SudokuGUI(this);
 		start = gui.getStartButton();
 		grid = new Field[9][9];
+		oldGrid = new Field[9][9];
 		initFields();
 		
 		if(SolveHelper.debug) {
@@ -32,24 +34,101 @@ public class Solver implements ActionListener {
 	//Sets some values for debugging purposes
 	public void debugValues() {
 		
-		int k = 1;
+//		int k = 1;
+//		
+//		for(int i = 0; i<9; i++) {
+//			for(int j = 0; j<9; j++) {
+//				if(grid[i][j].getQuadrant() == 0) {
+//					grid[i][j].setNumber(k);
+//					k += 1;
+//				}
+//			}
+//		}
 		
-		for(int i = 0; i<9; i++) {
-			for(int j = 0; j<9; j++) {
-				if(grid[i][j].getQuadrant() == 0) {
-					grid[i][j].setNumber(k);
-					k += 1;
-				}
+		//Row 0
+		grid[0][0].setNumber(6);
+		grid[0][6].setNumber(3);
+		grid[0][7].setNumber(5);
+		
+		//Row 1
+		grid[1][0].setNumber(7);
+		grid[1][2].setNumber(4);
+		grid[1][4].setNumber(9);
+		grid[1][5].setNumber(3);
+		
+		//Row 2
+		grid[2][1].setNumber(9);
+		grid[2][3].setNumber(5);
+		grid[2][4].setNumber(1);
+		grid[2][6].setNumber(4);
+		grid[2][7].setNumber(6);
+		
+		//Row 3
+		grid[3][1].setNumber(8);
+		grid[3][2].setNumber(1);
+		grid[3][7].setNumber(2);
+		grid[3][8].setNumber(5);
+		
+		//Row 4
+		grid[4][0].setNumber(9);
+		grid[4][1].setNumber(2);
+		grid[4][6].setNumber(6);
+		grid[4][7].setNumber(3);
+		
+		//Row 5
+		grid[5][3].setNumber(4);
+		grid[5][5].setNumber(9);
+		grid[5][7].setNumber(7);
+	
+		//Row 6
+		grid[6][1].setNumber(6);
+		grid[6][2].setNumber(2);
+		grid[6][5].setNumber(1);
+		grid[6][8].setNumber(8);
+		
+		//Row 7
+		grid[7][1].setNumber(4);
+		grid[7][3].setNumber(8);
+		grid[7][5].setNumber(7);
+		
+		//Row 8
+		grid[8][2].setNumber(9);
+		grid[8][5].setNumber(2);
+		grid[8][6].setNumber(5);
+		grid[8][8].setNumber(6);
+	}
+
+	//Updates the numbers in the old grid
+	public void updateOldgrid() {
+		
+		for(int i=0; i<9; i++) {
+			for(int j=0; j<9; j++) {
+				oldGrid[i][j].setNumber(grid[i][j].getNumber());
 			}
 		}
 	}
-
+	
+	//Checks if there has been a change
+	public boolean checkChange() {
+		
+		for(int i=0; i<9; i++) {
+			for(int j=0; j<9; j++) {
+				if(oldGrid[i][j].getNumber()!=grid[i][j].getNumber()) {
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
 	//Initializes the grid
 	private void initFields() {
 		
 		for(int i = 0; i<9; i++) {
 			for(int j = 0; j<9; j++) {
 				grid[i][j] = new Field(SolveHelper.getQuadrant(i, j));
+				oldGrid[i][j] = new Field(SolveHelper.getQuadrant(i, j));
 			}
 		}
 	}
@@ -171,27 +250,62 @@ public class Solver implements ActionListener {
 		gui.updateFields(grid);
 	}
 	
+	//Solves the grid by brute force
+	public void bruteForce() {
+		BruteForcer forcer = new BruteForcer(grid);
+		grid = forcer.forceSolve();
+		gui.updateFields(grid);
+	}
+	
 	//Solves the Sudoku
 	public void solve() {
 		
 		String error = "";
+		String error2 = "";
+		Boolean progress = true;
+		int totalIterations = 0;
 		
 		updateFields();
 		
 		if(Validator.validate(grid)==0) {
-			while(!SolveHelper.solved(grid)) {
+			while(!SolveHelper.solved(grid) && progress) {
+				
+
+				updateOldgrid();
 				updatePossibles();
 				checkNeeded();
+				progress = checkChange();
 			}
 			
 			gui.updateFields(grid);
+			
+			if(!SolveHelper.solved(grid) && !progress) {
+				bruteForce();
+			}
+			
+			for(int i=0; i<9; i++) {
+				for (int j=0; j<9; j++) {
+					totalIterations += grid[i][j].getIterations();
+				}
+			}
+			gui.setState("Sudoku gelöst! Iterationen gesamt: "+totalIterations);
+			
 		} else {
 			switch(Validator.validate(grid)) {
 			case 1: error = "Zeile";
+					error2 = "doppelte";
+					break;
 			case 2: error = "Spalte";
+					error2 = "doppelte";
+					break;
 			case 3: error = "Kästchen";
+					error2 = "doppelte";
+					break;
+			case 4: error = "Feld";
+					error2 = "zu große oder zu kleine";
+					break;
 			}
-			gui.setState(String.format("Eingaben sind nicht valide, ein(e) %s enthält eine doppelte Zahl", error));
+			gui.setState(String.format("Eingaben sind nicht valide, ein(e) %s enthält eine %s Zahl", error, error2));
 		}
 	}
 	
@@ -202,11 +316,12 @@ public class Solver implements ActionListener {
 		if (e.getSource() ==  gui.getStartButton()) {
 			solve();
 		} else if (e.getSource() == gui.getPosButton()) {
-			updateFields();
-			updatePossibles();
-			for(int i = 0; i<9; i++) {
+//			updateFields();
+//			updatePossibles();
+//			gui.updateFields(grid);
+			BruteForcer forcer = new BruteForcer(grid);
+			grid = forcer.forceSolve();
 			gui.updateFields(grid);
-			}
 		} else if (e.getSource() == gui.getResetButton()) {
 			resetFields();
 		}

@@ -48,6 +48,7 @@ public class SudokuGUI {
 		frame.setSize(600, 600);
 		frame.setTitle("SudokuSolver");
 		frame.setLayout(new java.awt.BorderLayout());
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
 		//Create Main Panel
 		mainpanel = new JPanel();

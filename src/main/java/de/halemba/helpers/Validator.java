@@ -20,6 +20,16 @@ public final class Validator {
 			}
 		}
 		
+		//Check if entered numbers are valid
+		for(int i=0; i<9; i++) {
+			for(int j=0; j<9; j++) {
+				if(grid[i][j].getNumber() > 9 || grid[i][j].getNumber()<0) {
+					return 4;
+				}
+			}
+		}
+		
+		
 		//Check if rows and columns are valid
 		for(int i=0; i<9; i++) {
 			for(int j=0; j<9; j++) {
